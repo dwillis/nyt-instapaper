@@ -3,20 +3,22 @@ from google.appengine.api.labs import taskqueue
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp import util
-import BeautifulSoup
+from django.utils import simplejson as json
 import logging
 import os
-import urllib
+import urllib2, urllib
 
 class MainHandler(webapp.RequestHandler):
     def get(self):
-        soup = BeautifulSoup.BeautifulSoup(urlfetch.fetch(url='http://www.breakfastpolitics.com').content)
-        links = soup.findAll('div', {'class':'entry-content'})[0].findAll('a')
+        url = "http://json8.nytimes.com/pages/politics/index.json"        
+        response = urllib2.urlopen(url).read()
+        items = json.loads(response)['items']
+
         articles = []
-        for link in links:
-            linktext = link.string
-            url = link['href']
-            byline = unicode(link.nextSibling).strip()
+        for item in items:
+            linktext = item['title']
+            url = item['link']
+            byline = item['byline']
             articles.append({
                 'url': url,
                 'byline': byline,
@@ -30,10 +32,12 @@ class MainHandler(webapp.RequestHandler):
         
     def post(self):
         articles = self.request.get_all("articles")
+        username = self.request.get('username')
+        password = self.request.get('password')
         for url in articles:
            taskqueue.add(
                url='/load-worker-dfsgylsdfgkjdfhlgjkdfdfgjfdslg', 
-               params={'url': url}
+               params={'url': url, 'username': username, 'password': password}
            )
         self.response.out.write("Sent %d articles to instapaper" % len(articles))
         
@@ -53,7 +57,7 @@ class LoadWorkerHandler(webapp.RequestHandler):
             method= urlfetch.POST,
             payload= form_data
         )
-        logging.info("Lodged %s with instapaper. Reponse = %d" % (article_url, instapaper_response.status_code,))
+        logging.info("Lodged %s with instapaper. Reponse = %d" % (article_url, instapaper_response.status_code))
 
 def main():
     application = webapp.WSGIApplication([

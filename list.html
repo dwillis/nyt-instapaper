@@ -1,7 +1,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title>breakfast politics to instapaper</title>
+	<title>nyt politics to instapaper</title>
 	<script language="javascript" type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
 	<style type="text/css"> 
         body {
@@ -157,21 +157,21 @@
 </head>
 <body onload="stripe('playlist', '#fff', '#edf3fe');">
 <div id="bottle">
-    <h1>Breakfast politics -> Instapaper</h1>
+    <h1>New York Times Politics -> Instapaper</h1>
     <form action="/" method="post">
         <table class="playlist" id="playlist" cellspacing="0">
         <tbody>
         {% for a in articles %}
         <tr>
-            <td><input type="checkbox" name="articles" id="row{{forloop.counter}}" value="{{a.url}}"></td>
-            <td>{{a.linktext}}</td>
-            <td>{{a.byline}}</td>
+            <td><input type="checkbox" name="articles" id="row{{ forloop.counter }}" value="{{ a.url }}"></td>
+            <td>{{ a.linktext }}</td>
+            <td>{{ a.byline }}</td>
         </tr>
         {% endfor %}
         </tbody>
         </table>
         Instapaper username/password:<input type="text" name="username" />
-        <input type="text" name="password" />
+        <input type="password" name="password" />
         <p><input type="submit" value="Post to Instapaper"></p>
     </form>
 </div>
